@@ -1,6 +1,7 @@
 #! /usr/bin/env node
 
 const fs = require('fs');
+const fse = require('fs-extra')
 const sharp = require('sharp');
 
 const args = process.argv.slice(2);
@@ -107,21 +108,47 @@ const createDirectories = () => {
 
 }
 
-fs.mkdir('generated', allRWEPermissions, () => {
+const removeGeneratedDirs = () => {
+	
+	return new Promise (
+		(resolve, reject) => {
 
-	createDirectories()
-		.then(
-			values => {
-				Promise.all(resizePngPromises)
-					.then(
-						values => {
+			fse.remove('generated', err => {
 
-							savePngs(values)
-								.then(values => console.log('completed'))
+				if(err) {
+					reject(err);
+					throw err;
+				}
 
-						}
-					)
-			}
-		)
+				return resolve();
 
-});
+			})
+
+		}
+	)
+
+}
+
+// start execution
+
+removeGeneratedDirs()
+	.then(
+		() => fs.mkdir('generated', allRWEPermissions, () => {
+
+			createDirectories()
+				.then(
+					values => {
+						Promise.all(resizePngPromises)
+							.then(
+								values => {
+
+									savePngs(values)
+										.then(values => console.log('completed'))
+
+								}
+							)
+					}
+				)
+
+		})
+	)
