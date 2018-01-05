@@ -5,6 +5,7 @@ const sharp = require('sharp');
 
 const args = process.argv.slice(2);
 
+const allRWEPermissions = parseInt("0777", 8);
 const pathToPng = args[0];
 const sizes = [
 	512,
@@ -16,6 +17,11 @@ const sizes = [
 	32,
 	24,
 	16
+]
+const dirsToCreate = [
+	'png',
+	'win',
+	'mac'
 ]
 
 fs.access(pathToPng, (err) => {
@@ -30,40 +36,92 @@ fs.access(pathToPng, (err) => {
   }
 });
 
-const savePngPromises = sizes.map(size => {
+const resizePngPromises = sizes.map(size => {
 
 	return new Promise(
 		(resolve, reject) => {
-		sharp(pathToPng)
-			.resize(size, size)
-			.background({r: 0, g: 0, b: 0, alpha: 0})
-			.embed()
-			.toFormat('png')
-			.toBuffer(function(err, outputBuffer) {
-				if (err) {
-					throw err
-					reject(err);
-				}
-
-				fs.writeFile(`generated/${size}x${size}.png`, outputBuffer, function (err) {
+			sharp(pathToPng)
+				.resize(size, size)
+				.background({r: 0, g: 0, b: 0, alpha: 0})
+				.embed()
+				.toFormat('png')
+				.toBuffer(function(err, outputBuffer) {
 					if (err) {
 						throw err
-						return reject(err);
+						reject(err);
 					}
 
-					resolve();
-				})
-			});
+					return resolve({
+						outputBuffer,
+						size
+					})
+
+				});
 		}
 	)
 
 })
 
-fs.mkdir('generated', () => {
+const savePngs = (pngs) => {
 
-	Promise.all(savePngPromises)
+	const savePngPromises = pngs.map(
+		png => new Promise (
+			(resolve, reject) => {
+				fs.writeFile(`generated/png/${png.size}x${png.size}.png`, png.outputBuffer, function (err) {
+					if (err) {
+						throw err
+						return reject(err);
+					}
+
+					return resolve();
+				})
+			}
+		)
+	)
+
+	return Promise.all(savePngPromises);
+
+}
+
+const createDirectories = () => {
+
+	const createDirsPromises = dirsToCreate.map(
+		dir => new Promise (
+			(resolve, reject) => {
+				fs.mkdir(`generated/${dir}`, allRWEPermissions, (err) => {
+
+					if(err) {
+						throw err;
+					}
+
+					console.log('created ' + dir)
+
+					resolve();
+
+				});
+			}
+		)
+	)
+
+	return Promise.all(createDirsPromises);
+
+}
+
+fs.mkdir('generated', allRWEPermissions, () => {
+
+	createDirectories()
 		.then(
-			values => console.log('created icons')
+			values => {
+				Promise.all(resizePngPromises)
+					.then(
+						values => {
+
+							savePngs(values)
+								.then(values => console.log('completed'))
+
+						}
+					)
+			}
 		)
 
 });
