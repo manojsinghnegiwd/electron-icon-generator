@@ -1,0 +1,14 @@
+{
+  "name": "electron-icon-generator",
+  "version": "1.0.0",
+  "description": "Generate icons for electron app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "sharp": "^0.18.4"
+  }
+}
