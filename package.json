@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "fs-extra": "^5.0.0",
-    "sharp": "^0.18.4"
+    "sharp": "^0.18.4",
+    "to-ico": "^1.1.5"
   }
 }
