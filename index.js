@@ -1,14 +1,17 @@
 #! /usr/bin/env node
 
 const fs = require('fs');
+const path = require('path');
 const fse = require('fs-extra')
 const sharp = require('sharp');
+const icongen = require( 'icon-gen' );
 
 const args = process.argv.slice(2);
 
 const allRWEPermissions = parseInt("0777", 8);
 const pathToPng = args[0];
 const sizes = [
+	1024,
 	512,
 	256,
 	128,
@@ -68,7 +71,7 @@ const savePngs = (pngs) => {
 	const savePngPromises = pngs.map(
 		png => new Promise (
 			(resolve, reject) => {
-				fs.writeFile(`generated/png/${png.size}x${png.size}.png`, png.outputBuffer, function (err) {
+				fs.writeFile(`generated/png/${png.size}.png`, png.outputBuffer, function (err) {
 					if (err) {
 						throw err
 						return reject(err);
@@ -129,6 +132,64 @@ const removeGeneratedDirs = () => {
 
 }
 
+const readDir = (dirSrc) => {
+	return new Promise (
+		(res, rej) => {
+			fs.readdir(dirSrc, (err, files) => {
+				if(err)
+					rej(err);
+
+				res(files.map((file) => {
+					return {
+						filename: file,
+						path: path.join(dirSrc, file)
+					}
+				}));
+			})
+		}
+	)
+}
+
+const renamePngs = () => {
+	const pngOutputDir = './generated/png';
+
+	readDir(pngOutputDir)
+		.then(files => {
+
+			const filesPromises = files.map(
+				file => new Promise ((resolve, reject) => {
+
+					const size = file.filename.split('.')[0];
+
+					fs.rename(file.path, path.join(pngOutputDir, `${size}x${size}.png`), (err) => {
+
+						if(err) {
+							throw err;
+							return reject(err);
+						}
+
+						console.log(`renamed ${size}.png`)
+
+						return resolve();
+
+					})
+
+				})
+			)
+
+			Promise.all(
+				filesPromises
+			).then(
+				() => console.log('renamed all')
+			)
+
+		})
+}
+
+const generateIcons = (outputDir, mode) => {
+	return icongen('./generated/png', outputDir, {type: 'png',names: {mode:'icon'}, modes:[mode]})
+}
+
 // start execution
 
 removeGeneratedDirs()
@@ -143,7 +204,25 @@ removeGeneratedDirs()
 								values => {
 
 									savePngs(values)
-										.then(values => console.log('completed'))
+										.then(values =>{
+											console.log('generated PNGS')
+											generateIcons('./generated/win', 'ico')
+											.then((results) => {
+												console.log('generated ICO')
+												generateIcons('./generated/mac', 'icns')
+												.then((results) => {
+												  console.log('generated ICNS')
+												  renamePngs()
+												})
+												.catch((err) => {
+												  console.error(err)
+												});
+											})
+											.catch((err) => {
+											  console.error(err)
+											});
+										})
+									
 
 								}
 							)
