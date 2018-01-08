@@ -2,6 +2,8 @@ Electron Icon Generator
 ======
 **Electron Icon Generator** generates icons for your electron app.
 
+[![NPM](https://nodei.co/npm/electron-icon-generator.png)](https://www.npmjs.com/package/electron-icon-generator)
+
 ## How to install
 ```sh
 $ npm install -g electron-icon-generator
