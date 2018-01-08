@@ -4,7 +4,7 @@ Electron Icon Generator
 
 ## How to install
 ```sh
-$ npm install electron-icon-generator
+$ npm install -g electron-icon-generator
 ```
 
 ## Usage

@@ -1,13 +1,27 @@
 {
   "name": "electron-icon-generator",
-  "version": "1.0.0",
-  "description": "Generate icons for electron app",
+  "version": "1.0.2",
+  "description": "Generate icons for your electron app",
   "main": "index.js",
+  "bin": "./index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manojsinghnegiwd/electron-icon-generator"
+  },
+  "bugs": {
+    "url": "https://github.com/manojsinghnegiwd/electron-icon-generator/issues"
+  },
+  "author": "Manoj Singh Negi",
+  "keywords": [
+    "electron",
+    "icon",
+    "electron-icon",
+    "electron-icon-generator"
+  ],
+  "license": "MIT",
   "dependencies": {
     "fs-extra": "^5.0.0",
     "icon-gen": "^1.2.0",
