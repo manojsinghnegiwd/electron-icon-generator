@@ -71,7 +71,7 @@ const savePngs = (pngs) => {
 	const savePngPromises = pngs.map(
 		png => new Promise (
 			(resolve, reject) => {
-				fs.writeFile(`generated/png/${png.size}.png`, png.outputBuffer, function (err) {
+				fs.writeFile(`icons/png/${png.size}.png`, png.outputBuffer, function (err) {
 					if (err) {
 						throw err
 						return reject(err);
@@ -92,7 +92,7 @@ const createDirectories = () => {
 	const createDirsPromises = dirsToCreate.map(
 		dir => new Promise (
 			(resolve, reject) => {
-				fs.mkdir(`generated/${dir}`, allRWEPermissions, (err) => {
+				fs.mkdir(`icons/${dir}`, allRWEPermissions, (err) => {
 
 					if(err) {
 						throw err;
@@ -111,12 +111,12 @@ const createDirectories = () => {
 
 }
 
-const removeGeneratedDirs = () => {
+const removeiconsDirs = () => {
 	
 	return new Promise (
 		(resolve, reject) => {
 
-			fse.remove('generated', err => {
+			fse.remove('icons', err => {
 
 				if(err) {
 					reject(err);
@@ -151,7 +151,7 @@ const readDir = (dirSrc) => {
 }
 
 const renamePngs = () => {
-	const pngOutputDir = './generated/png';
+	const pngOutputDir = './icons/png';
 
 	readDir(pngOutputDir)
 		.then(files => {
@@ -187,14 +187,14 @@ const renamePngs = () => {
 }
 
 const generateIcons = (outputDir, mode) => {
-	return icongen('./generated/png', outputDir, {type: 'png',names: {mode:'icon'}, modes:[mode]})
+	return icongen('./icons/png', outputDir, {type: 'png',names: {mode:'icon'}, modes:[mode]})
 }
 
 // start execution
 
-removeGeneratedDirs()
+removeiconsDirs()
 	.then(
-		() => fs.mkdir('generated', allRWEPermissions, () => {
+		() => fs.mkdir('icons', allRWEPermissions, () => {
 
 			createDirectories()
 				.then(
@@ -205,13 +205,13 @@ removeGeneratedDirs()
 
 									savePngs(values)
 										.then(values =>{
-											console.log('generated PNGS')
-											generateIcons('./generated/win', 'ico')
+											console.log('icons PNGS')
+											generateIcons('./icons/win', 'ico')
 											.then((results) => {
-												console.log('generated ICO')
-												generateIcons('./generated/mac', 'icns')
+												console.log('icons ICO')
+												generateIcons('./icons/mac', 'icns')
 												.then((results) => {
-												  console.log('generated ICNS')
+												  console.log('icons ICNS')
 												  renamePngs()
 												})
 												.catch((err) => {
