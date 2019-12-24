@@ -45,9 +45,17 @@ const resizePngPromises = sizes.map(size => {
 	return new Promise(
 		(resolve, reject) => {
 			sharp(pathToPng)
-				.resize(size, size)
-				.background({r: 0, g: 0, b: 0, alpha: 0})
-				.embed()
+				.resize({
+					width: size,
+					height: size,
+					fit: 'contain',
+					background: {
+						r: 0,
+						g: 0,
+						b: 0,
+						alpha: 0
+					},
+				})
 				.toFormat('png')
 				.toBuffer(function(err, outputBuffer) {
 					if (err) {
@@ -112,7 +120,7 @@ const createDirectories = () => {
 }
 
 const removeiconsDirs = () => {
-	
+
 	return new Promise (
 		(resolve, reject) => {
 
@@ -222,7 +230,7 @@ removeiconsDirs()
 											  console.error(err)
 											});
 										})
-									
+
 
 								}
 							)

@@ -25,6 +25,6 @@
   "dependencies": {
     "fs-extra": "^5.0.0",
     "icon-gen": "^1.2.0",
-    "sharp": "^0.18.4"
+    "sharp": "^0.23.4"
   }
 }
